@@ -12,6 +12,7 @@ func main() {
 	scanner.Scan()
 
 	puzzle := strings.TrimSpace(scanner.Text())
+	// TODO: Try to avoid doing all this work ahead of time.
 	digits := getIntSlice(puzzle)
 
 	firstCaptcha := solveFirstCaptcha(digits)

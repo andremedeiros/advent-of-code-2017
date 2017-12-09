@@ -1,0 +1,3 @@
+#!/bin/bash
+
+grep -Hn TODO **/*.go
