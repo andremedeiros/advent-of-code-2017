@@ -32,6 +32,7 @@ func TestManhattanDistance(t *testing.T) {
 		from, to Point
 		expected int
 	}{
+		{Point{6, 4}, Point{1, 2}, 7},
 		{Point{1, 2}, Point{6, 4}, 7},
 	}
 
