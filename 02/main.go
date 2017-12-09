@@ -73,7 +73,6 @@ func (s Spreadsheet) Checksum2() int {
 
 		for j := 0; j < len(row)-1; j++ {
 			for k := j + 1; k < len(row); k++ {
-				// TODO: I hate this, we should immediately get the min and max out of this thing. Maybe sort the row before iterating?
 				a := row[j]
 				b := row[k]
 
