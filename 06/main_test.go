@@ -18,7 +18,7 @@ func TestCalculateRedistributions(t *testing.T) {
 			gotRedistributions, gotAge := CalculateRedistributions(test.banks)
 
 			if gotRedistributions != test.expectedRedistributions {
-				t.Errorf("Expected redistributions to be %d, got %d\n", test.expectedAge, got)
+				t.Errorf("Expected redistributions to be %d, got %d\n", test.expectedRedistributions, gotRedistributions)
 			}
 
 			if gotAge != test.expectedAge {
