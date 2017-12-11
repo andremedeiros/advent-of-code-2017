@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
-	"reflect"
 	"strconv"
 	"strings"
 )
@@ -29,11 +28,8 @@ func main() {
 
 // CalculateRedistributions takes a list of blocks in banks and returns how many reditributions it can do before
 // the value ends up being the same
-func CalculateRedistributions(origBanks []int) (int, int) {
-	banks := make([]int, len(origBanks))
-	copy(banks, origBanks)
-
-	configurationsSeen := make([][]int, 0)
+func CalculateRedistributions(banks []int) (int, int) {
+	configurationsSeen := make([]int, 0)
 
 	for {
 		// Redistribute
@@ -54,16 +50,25 @@ func CalculateRedistributions(origBanks []int) (int, int) {
 		}
 
 		// Check if already seen and, if so, bail out
+		f := fingerprint(banks)
 		for i := 0; i < len(configurationsSeen); i++ {
-			if reflect.DeepEqual(banks, configurationsSeen[i]) {
+			if f == configurationsSeen[i] {
 				return len(configurationsSeen) + 1, len(configurationsSeen) - i
 			}
 		}
 
 		// Haven't seen this one yet, so let's register it
-		banksCopy := make([]int, len(banks))
-		copy(banksCopy, banks)
-
-		configurationsSeen = append(configurationsSeen, banksCopy)
+		configurationsSeen = append(configurationsSeen, f)
 	}
+}
+
+func fingerprint(digits []int) int {
+	seed := 113 // any prime number
+	result := 0
+
+	for _, x := range digits {
+		result = (result + x) * seed
+	}
+
+	return result
 }
