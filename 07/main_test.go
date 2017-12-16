@@ -5,8 +5,8 @@ import (
 	"testing"
 )
 
-func TestParse(t *testing.T) {
-	programs := `pbga (66)
+var (
+	programs = `pbga (66)
 xhth (57)
 ebii (61)
 havc (66)
@@ -19,7 +19,9 @@ jptl (61)
 ugml (68) -> gyxo, ebii, jptl
 gyxo (61)
 cntj (57)`
+)
 
+func TestParse(t *testing.T) {
 	hints, err := Parse(programs)
 
 	if err != nil {
@@ -39,5 +41,14 @@ cntj (57)`
 
 	if !reflect.DeepEqual(hint, wanted) {
 		t.Errorf("Expected %+v, got %+v\n", wanted, hint)
+	}
+}
+
+func TestSortNodes(t *testing.T) {
+	hints, _ := Parse(programs)
+	program := SortNodes(hints)
+
+	if program.Name != "tknk" {
+		t.Errorf("Expected root to be %+v, got %+v\n", "tknk", program.Name)
 	}
 }

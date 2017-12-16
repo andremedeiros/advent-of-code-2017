@@ -3,7 +3,6 @@ package main
 
 import (
   "errors"
-  "fmt"
   "strconv"
 )
 
@@ -33,7 +32,7 @@ func Parse(data string) ([]NodeHint, error) {
       currentHint = NodeHint{}
     }
 
-    program_name = ( lower )+ >mark %debug;
+    program_name = ( lower )+ >mark;
     id           = ( digit )+ >mark;
 
     entry            = ( program_name %register_program_name ' (' id %register_parent_id ')' );

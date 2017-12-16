@@ -5,15 +5,14 @@ package main
 
 import (
   "errors"
-  "fmt"
   "strconv"
 )
 
 
-//line parser.go:14
+//line parser.go:13
 var _programs_actions []byte = []byte{
-	0, 1, 0, 1, 3, 1, 5, 2, 1, 
-	2, 2, 1, 4, 3, 1, 4, 5, 
+	0, 1, 0, 1, 1, 1, 2, 1, 3, 
+	1, 4, 2, 3, 4, 
 }
 
 var _programs_key_offsets []byte = []byte{
@@ -50,15 +49,15 @@ var _programs_trans_targs []byte = []byte{
 }
 
 var _programs_trans_actions []byte = []byte{
-	1, 0, 7, 0, 0, 0, 0, 1, 
-	0, 3, 0, 0, 0, 0, 0, 0, 
-	0, 0, 1, 0, 5, 0, 0, 13, 
-	10, 0, 0, 
+	1, 0, 3, 0, 0, 0, 0, 1, 
+	0, 5, 0, 0, 0, 0, 0, 0, 
+	0, 0, 1, 0, 9, 0, 0, 11, 
+	7, 0, 0, 
 }
 
 var _programs_eof_actions []byte = []byte{
 	0, 0, 0, 0, 0, 0, 0, 0, 
-	0, 0, 5, 13, 
+	0, 0, 9, 11, 
 }
 
 const programs_start int = 1
@@ -68,7 +67,7 @@ const programs_error int = 0
 const programs_en_main int = 1
 
 
-//line parser.go.rl:13
+//line parser.go.rl:12
 
 
 // Parse parses a list of programs and returns the list of node hints
@@ -81,12 +80,12 @@ func Parse(data string) ([]NodeHint, error) {
   currentHint := NodeHint{}
 
   
-//line parser.go:85
+//line parser.go:84
 	{
 	cs = programs_start
 	}
 
-//line parser.go:90
+//line parser.go:89
 	{
 	var _klen int
 	var _trans int
@@ -165,27 +164,24 @@ _match:
 		_acts++
 		switch _programs_actions[_acts-1] {
 		case 0:
-//line parser.go.rl:25
+//line parser.go.rl:24
  mark = p 
 		case 1:
-//line parser.go.rl:26
- fmt.Println(data[mark:p]) 
+//line parser.go.rl:27
+ currentHint.Name = data[mark:p] 
 		case 2:
 //line parser.go.rl:28
- currentHint.Name = data[mark:p] 
+ currentHint.ParentID, _ = strconv.Atoi(data[mark:p]) 
 		case 3:
 //line parser.go.rl:29
- currentHint.ParentID, _ = strconv.Atoi(data[mark:p]) 
+ currentHint.Children = append(currentHint.Children, data[mark:p]) 
 		case 4:
 //line parser.go.rl:30
- currentHint.Children = append(currentHint.Children, data[mark:p]) 
-		case 5:
-//line parser.go.rl:31
 
       hints = append(hints, currentHint)
       currentHint = NodeHint{}
     
-//line parser.go:189
+//line parser.go:185
 		}
 	}
 
@@ -204,19 +200,16 @@ _again:
 		for ; __nacts > 0; __nacts-- {
 			__acts++
 			switch _programs_actions[__acts-1] {
-			case 1:
-//line parser.go.rl:26
- fmt.Println(data[mark:p]) 
+			case 3:
+//line parser.go.rl:29
+ currentHint.Children = append(currentHint.Children, data[mark:p]) 
 			case 4:
 //line parser.go.rl:30
- currentHint.Children = append(currentHint.Children, data[mark:p]) 
-			case 5:
-//line parser.go.rl:31
 
       hints = append(hints, currentHint)
       currentHint = NodeHint{}
     
-//line parser.go:220
+//line parser.go:213
 			}
 		}
 	}
@@ -224,7 +217,7 @@ _again:
 	_out: {}
 	}
 
-//line parser.go.rl:47
+//line parser.go.rl:46
 
 
   if eof != p {
