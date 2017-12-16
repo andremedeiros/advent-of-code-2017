@@ -1,6 +1,7 @@
 package main
 
 import (
+	"reflect"
 	"testing"
 )
 
@@ -27,5 +28,16 @@ cntj (57)`
 
 	if len(hints) != 13 {
 		t.Errorf("Expected 13 programs, got %d\n", len(hints))
+	}
+
+	hint := hints[5]
+	wanted := NodeHint{
+		Name:     "fwft",
+		ParentID: 72,
+		Children: []string{"ktlj", "cntj", "xhth"},
+	}
+
+	if !reflect.DeepEqual(hint, wanted) {
+		t.Errorf("Expected %+v, got %+v\n", wanted, hint)
 	}
 }

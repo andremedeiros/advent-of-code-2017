@@ -6,68 +6,69 @@ package main
 import (
   "errors"
   "fmt"
+  "strconv"
 )
 
 
-//line parser.go:13
+//line parser.go:14
 var _programs_actions []byte = []byte{
-	0, 1, 0, 1, 1, 1, 2, 1, 3, 
-	1, 4, 2, 0, 1, 2, 0, 2, 
-	2, 0, 3, 2, 1, 0, 
+	0, 1, 0, 1, 3, 1, 5, 2, 1, 
+	2, 2, 1, 4, 3, 1, 4, 5, 
 }
 
 var _programs_key_offsets []byte = []byte{
-	0, 0, 1, 4, 9, 12, 13, 14, 
-	15, 19, 23, 26, 29, 
+	0, 0, 2, 5, 6, 8, 11, 12, 
+	13, 14, 16, 18, 
 }
 
 var _programs_trans_keys []byte = []byte{
-	40, 41, 48, 57, 10, 32, 44, 97, 
-	122, 32, 97, 122, 45, 62, 32, 10, 
-	44, 97, 122, 10, 44, 97, 122, 41, 
-	48, 57, 32, 97, 122, 10, 32, 97, 
-	122, 
+	97, 122, 32, 97, 122, 40, 48, 57, 
+	41, 48, 57, 45, 62, 32, 97, 122, 
+	10, 32, 10, 44, 97, 122, 
 }
 
 var _programs_single_lengths []byte = []byte{
-	0, 1, 1, 3, 1, 1, 1, 1, 
-	2, 2, 1, 1, 2, 
+	0, 0, 1, 1, 0, 1, 1, 1, 
+	1, 0, 2, 2, 
 }
 
 var _programs_range_lengths []byte = []byte{
-	0, 0, 1, 1, 1, 0, 0, 0, 
-	1, 1, 1, 1, 1, 
+	0, 1, 1, 0, 1, 1, 0, 0, 
+	0, 1, 0, 1, 
 }
 
 var _programs_index_offsets []byte = []byte{
-	0, 0, 2, 5, 10, 13, 15, 17, 
-	19, 23, 27, 30, 33, 
+	0, 0, 2, 5, 7, 9, 12, 14, 
+	16, 18, 20, 23, 
 }
 
 var _programs_trans_targs []byte = []byte{
-	2, 0, 3, 10, 0, 12, 5, 7, 
-	9, 0, 1, 4, 0, 6, 0, 7, 
-	0, 8, 0, 12, 7, 9, 0, 12, 
-	7, 9, 0, 3, 10, 0, 1, 4, 
-	0, 11, 1, 4, 0, 
+	2, 0, 3, 2, 0, 4, 0, 5, 
+	0, 10, 5, 0, 7, 0, 8, 0, 
+	9, 0, 11, 0, 1, 6, 0, 1, 
+	8, 11, 0, 
 }
 
 var _programs_trans_actions []byte = []byte{
-	0, 0, 17, 11, 0, 9, 0, 1, 
-	11, 0, 5, 3, 0, 0, 0, 0, 
-	0, 0, 0, 9, 1, 11, 0, 9, 
-	1, 20, 0, 7, 3, 0, 14, 11, 
-	0, 0, 14, 11, 0, 
+	1, 0, 7, 0, 0, 0, 0, 1, 
+	0, 3, 0, 0, 0, 0, 0, 0, 
+	0, 0, 1, 0, 5, 0, 0, 13, 
+	10, 0, 0, 
 }
 
-const programs_start int = 11
-const programs_first_final int = 11
+var _programs_eof_actions []byte = []byte{
+	0, 0, 0, 0, 0, 0, 0, 0, 
+	0, 0, 5, 13, 
+}
+
+const programs_start int = 1
+const programs_first_final int = 10
 const programs_error int = 0
 
-const programs_en_main int = 11
+const programs_en_main int = 1
 
 
-//line parser.go.rl:12
+//line parser.go.rl:13
 
 
 // Parse parses a list of programs and returns the list of node hints
@@ -76,15 +77,16 @@ func Parse(data string) ([]NodeHint, error) {
 
   cs, p, pe, eof := 0, 0, len(data), len(data)
   mark := 0
-  amt := 0
+
+  currentHint := NodeHint{}
 
   
-//line parser.go:83
+//line parser.go:85
 	{
 	cs = programs_start
 	}
 
-//line parser.go:88
+//line parser.go:90
 	{
 	var _klen int
 	var _trans int
@@ -163,21 +165,27 @@ _match:
 		_acts++
 		switch _programs_actions[_acts-1] {
 		case 0:
-//line parser.go.rl:23
- amt, mark = 0, p 
+//line parser.go.rl:25
+ mark = p 
 		case 1:
-//line parser.go.rl:24
- amt++ 
-		case 2:
 //line parser.go.rl:26
- fmt.Println("Program name", data[mark:p]) 
-		case 3:
-//line parser.go.rl:27
- fmt.Println("Program ID", data[mark:p]) 
-		case 4:
+ fmt.Println(data[mark:p]) 
+		case 2:
 //line parser.go.rl:28
- fmt.Println("Child program name", data[mark:p]) 
-//line parser.go:181
+ currentHint.Name = data[mark:p] 
+		case 3:
+//line parser.go.rl:29
+ currentHint.ParentID, _ = strconv.Atoi(data[mark:p]) 
+		case 4:
+//line parser.go.rl:30
+ currentHint.Children = append(currentHint.Children, data[mark:p]) 
+		case 5:
+//line parser.go.rl:31
+
+      hints = append(hints, currentHint)
+      currentHint = NodeHint{}
+    
+//line parser.go:189
 		}
 	}
 
@@ -190,10 +198,33 @@ _again:
 		goto _resume
 	}
 	_test_eof: {}
+	if p == eof {
+		__acts := _programs_eof_actions[cs]
+		__nacts := uint(_programs_actions[__acts]); __acts++
+		for ; __nacts > 0; __nacts-- {
+			__acts++
+			switch _programs_actions[__acts-1] {
+			case 1:
+//line parser.go.rl:26
+ fmt.Println(data[mark:p]) 
+			case 4:
+//line parser.go.rl:30
+ currentHint.Children = append(currentHint.Children, data[mark:p]) 
+			case 5:
+//line parser.go.rl:31
+
+      hints = append(hints, currentHint)
+      currentHint = NodeHint{}
+    
+//line parser.go:220
+			}
+		}
+	}
+
 	_out: {}
 	}
 
-//line parser.go.rl:44
+//line parser.go.rl:47
 
 
   if eof != p {

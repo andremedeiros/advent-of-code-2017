@@ -4,6 +4,7 @@ package main
 import (
   "errors"
   "fmt"
+  "strconv"
 )
 
 %%{
@@ -17,27 +18,29 @@ func Parse(data string) ([]NodeHint, error) {
 
   cs, p, pe, eof := 0, 0, len(data), len(data)
   mark := 0
-  amt := 0
+
+  currentHint := NodeHint{}
 
   %%{
-    action tok_start              { amt, mark = 0, p }
-    action tok_char               { amt++ }
+    action mark                        { mark = p }
+    action debug                       { fmt.Println(data[mark:p]) }
 
-    action program_name_end       { fmt.Println("Program name", data[mark:p]) }
-    action program_id_end         { fmt.Println("Program ID", data[mark:p]) }
-    action child_program_name_end { fmt.Println("Child program name", data[mark:p]) }
+    action register_program_name       { currentHint.Name = data[mark:p] }
+    action register_parent_id          { currentHint.ParentID, _ = strconv.Atoi(data[mark:p]) }
+    action register_child_program_name { currentHint.Children = append(currentHint.Children, data[mark:p]) }
+    action new_entry {
+      hints = append(hints, currentHint)
+      currentHint = NodeHint{}
+    }
 
-    action debug                  { fmt.Printf("mark: %d\np: %d\npe: %d\n", mark, p, pe) }
+    program_name = ( lower )+ >mark %debug;
+    id           = ( digit )+ >mark;
 
-    str_token = ( lower* ) >tok_start @tok_char;
-    int_token = ( digit* ) >tok_start @tok_char;
+    entry            = ( program_name %register_program_name ' (' id %register_parent_id ')' );
+    entry_with_hints = ( entry ' -> ' ( program_name %register_child_program_name ', ' )* program_name %register_child_program_name );
+    program_entry    = ( entry_with_hints | entry ) %new_entry;
 
-    program_id = ( int_token ) %program_id_end;
-    child_list = ( str_token ', '? )* %child_program_name_end;
-
-    entry = ( str_token ) %program_name_end ' (' program_id ')' ' -> '? child_list? '\n'?;
-
-    main := ( entry '\n' )*;
+    main := ( program_entry '\n' )* program_entry;
 
     write init;
     write exec;
