@@ -171,7 +171,7 @@ _match:
  currentHint.Name = data[mark:p] 
 		case 2:
 //line parser.go.rl:28
- currentHint.ParentID, _ = strconv.Atoi(data[mark:p]) 
+ currentHint.Weight, _ = strconv.Atoi(data[mark:p]) 
 		case 3:
 //line parser.go.rl:29
  currentHint.Children = append(currentHint.Children, data[mark:p]) 

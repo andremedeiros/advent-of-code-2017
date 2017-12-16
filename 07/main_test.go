@@ -35,7 +35,7 @@ func TestParse(t *testing.T) {
 	hint := hints[5]
 	wanted := NodeHint{
 		Name:     "fwft",
-		ParentID: 72,
+		Weight:   72,
 		Children: []string{"ktlj", "cntj", "xhth"},
 	}
 
@@ -50,5 +50,9 @@ func TestSortNodes(t *testing.T) {
 
 	if program.Name != "tknk" {
 		t.Errorf("Expected root to be %+v, got %+v\n", "tknk", program.Name)
+	}
+
+	if len(program.Children) != 3 {
+		t.Errorf("Expected program to have 3 children, got %d\n", len(program.Children))
 	}
 }

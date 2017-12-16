@@ -25,7 +25,7 @@ func Parse(data string) ([]NodeHint, error) {
     action debug                       { fmt.Println(data[mark:p]) }
 
     action register_program_name       { currentHint.Name = data[mark:p] }
-    action register_parent_id          { currentHint.ParentID, _ = strconv.Atoi(data[mark:p]) }
+    action register_weight             { currentHint.Weight, _ = strconv.Atoi(data[mark:p]) }
     action register_child_program_name { currentHint.Children = append(currentHint.Children, data[mark:p]) }
     action new_entry {
       hints = append(hints, currentHint)
@@ -33,9 +33,9 @@ func Parse(data string) ([]NodeHint, error) {
     }
 
     program_name = ( lower )+ >mark;
-    id           = ( digit )+ >mark;
+    weight       = ( digit )+ >mark;
 
-    entry            = ( program_name %register_program_name ' (' id %register_parent_id ')' );
+    entry            = ( program_name %register_program_name ' (' weight %register_weight ')' );
     entry_with_hints = ( entry ' -> ' ( program_name %register_child_program_name ', ' )* program_name %register_child_program_name );
     program_entry    = ( entry_with_hints | entry ) %new_entry;
 
