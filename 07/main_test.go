@@ -56,3 +56,13 @@ func TestSortNodes(t *testing.T) {
 		t.Errorf("Expected program to have 3 children, got %d\n", len(program.Children))
 	}
 }
+
+func TestBalanceNodes(t *testing.T) {
+	hints, _ := Parse(programs)
+	program := SortNodes(hints)
+
+	balancedWeight := program.Balance()
+	if balancedWeight != 60 {
+		t.Errorf("Expected balanced weight to be 60, got %d\n", balancedWeight)
+	}
+}

@@ -21,6 +21,7 @@ func main() {
 	program := SortNodes(hints)
 
 	fmt.Printf("Root: %s\n", program.Name)
+	fmt.Printf("New weight: %d\n", program.Balance())
 }
 
 // Program holds the program's name and its list of children
@@ -71,4 +72,79 @@ func SortNodes(hints []NodeHint) *Program {
 	}
 
 	return nil
+}
+
+// IsBalanced checks whether a program is balanced or not
+func (p *Program) IsBalanced() bool {
+	weights := make(map[int]bool)
+
+	for _, child := range p.Children {
+		weights[child.TotalWeight()] = true
+	}
+
+	return len(weights) == 1
+}
+
+// TotalWeight recursively calculates total weight of a program's children
+func (p *Program) TotalWeight() int {
+	sum := p.Weight
+
+	for _, child := range p.Children {
+		sum += child.TotalWeight()
+	}
+
+	return sum
+}
+
+// Balance will find the program that needs balancing and balances it. It works under the assumption that the root program is not balanced.
+func (p *Program) Balance() int {
+	program := p
+
+	for {
+		previousProgram := program
+
+		for _, child := range program.Children {
+			if !child.IsBalanced() {
+				program = child
+				break
+			}
+		}
+
+		if previousProgram == program {
+			break
+		}
+	}
+
+	// Divide weights by groups
+	weightGroups := make(map[int][]*Program)
+
+	fmt.Println(program.Name)
+
+	for _, child := range program.Children {
+		totalWeight := child.TotalWeight()
+		if _, ok := weightGroups[totalWeight]; ok {
+			weightGroups[totalWeight] = append(weightGroups[totalWeight], child)
+		} else {
+			weightGroups[totalWeight] = []*Program{child}
+		}
+	}
+
+	badChild := p
+	correctTotalWeight := 0
+
+	for weight, group := range weightGroups {
+		if len(group) > 1 {
+			correctTotalWeight = weight
+		} else {
+			badChild = group[0]
+		}
+	}
+
+	fmt.Println(badChild.Name, badChild.Weight, badChild.TotalWeight(), correctTotalWeight)
+	diff := badChild.TotalWeight() - correctTotalWeight
+	if diff < 0 {
+		diff = diff * -1
+	}
+
+	return badChild.Weight - diff
 }
