@@ -86,7 +86,6 @@ func Parse(data string) (*VirtualMachine, error) {
   }%%
 
   if eof != p {
-    fmt.Println(currentInstruction)
     return nil, errors.New("parse error")
   }
 
