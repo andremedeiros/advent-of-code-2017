@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"bytes"
 	"fmt"
 	"os"
 	"strings"
@@ -11,8 +12,7 @@ func main() {
 	scanner := bufio.NewScanner(os.Stdin)
 	scanner.Scan()
 
-	puzzle := strings.TrimSpace(scanner.Text())
-	digits := getIntSlice(puzzle)
+	digits := bytes.Runes([]byte(strings.TrimSpace(scanner.Text())))
 
 	firstCaptcha := solveFirstCaptcha(digits)
 	fmt.Printf("First Captcha: %d\n", firstCaptcha)
@@ -20,41 +20,19 @@ func main() {
 	fmt.Printf("Second Captcha: %d\n", secondCaptcha)
 }
 
-func getIntSlice(digits string) []int {
-	ints := make([]int, len(digits))
-	for i := 0; i < len(digits); i++ {
-		ints[i] = int(digits[i] - byte('0'))
-	}
-
-	return ints
-}
-
-func solveFirstCaptcha(digits []int) int {
-	captcha := 0
-
-	for i := 0; i < len(digits); i++ {
-		current := digits[i]
-		next := digits[(i+1)%len(digits)]
-
-		if current == next {
-			captcha += current
+func solveCaptcha(digits []rune, f func(int) int) (captcha rune) {
+	for i, c := range digits {
+		if next := digits[f(i)%len(digits)]; c == next {
+			captcha += c - '0'
 		}
 	}
-
-	return captcha
+	return
 }
 
-func solveSecondCaptcha(digits []int) int {
-	captcha := 0
+func solveFirstCaptcha(digits []rune) rune {
+	return solveCaptcha(digits, func(i int) int { return i + 1 })
+}
 
-	for i := 0; i < len(digits); i++ {
-		current := digits[i]
-		next := digits[((len(digits)/2)+i)%len(digits)]
-
-		if current == next {
-			captcha += current
-		}
-	}
-
-	return captcha
+func solveSecondCaptcha(digits []rune) rune {
+	return solveCaptcha(digits, func(i int) int { return i + len(digits)/2 })
 }
