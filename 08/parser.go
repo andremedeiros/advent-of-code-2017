@@ -1,6 +1,5 @@
 
 //line parser.go.rl:1
-// -*-go-*-
 package main
 
 import (
@@ -10,7 +9,7 @@ import (
 )
 
 
-//line parser.go:14
+//line parser.go:13
 var _programs_actions []byte = []byte{
 	0, 1, 0, 1, 2, 1, 3, 1, 5, 
 	1, 6, 1, 7, 2, 0, 2, 2, 
@@ -91,7 +90,7 @@ const programs_error int = 0
 const programs_en_main int = 1
 
 
-//line parser.go.rl:13
+//line parser.go.rl:12
 
 
 // Parse parses a list of programs and returns the list of node hints
@@ -104,12 +103,12 @@ func Parse(data string) (*VirtualMachine, error) {
   currentInstruction := Instruction{}
 
   
-//line parser.go:108
+//line parser.go:107
 	{
 	cs = programs_start
 	}
 
-//line parser.go:113
+//line parser.go:112
 	{
 	var _klen int
 	var _trans int
@@ -189,28 +188,28 @@ _match:
 		_acts++
 		switch _programs_actions[_acts-1] {
 		case 0:
-//line parser.go.rl:25
+//line parser.go.rl:24
  mark = p 
 		case 1:
-//line parser.go.rl:28
+//line parser.go.rl:27
 
       instructions = append(instructions, currentInstruction)
       currentInstruction = Instruction{}
     
 		case 2:
-//line parser.go.rl:33
+//line parser.go.rl:32
  currentInstruction.Amount, _ = strconv.Atoi(data[mark:p]) 
 		case 3:
-//line parser.go.rl:34
+//line parser.go.rl:33
  currentInstruction.ComparisonRegister = data[mark:p] 
 		case 4:
-//line parser.go.rl:35
+//line parser.go.rl:34
  currentInstruction.ComparisonValue, _ = strconv.Atoi(data[mark:p]) 
 		case 5:
-//line parser.go.rl:36
+//line parser.go.rl:35
  currentInstruction.Register = data[mark:p] 
 		case 6:
-//line parser.go.rl:38
+//line parser.go.rl:37
 
       switch op := data[mark:p]; op {
         case "inc":
@@ -222,7 +221,7 @@ _match:
       }
     
 		case 7:
-//line parser.go.rl:49
+//line parser.go.rl:48
 
       switch comp := data[mark:p]; comp {
         case "==":
@@ -241,7 +240,7 @@ _match:
           return nil, fmt.Errorf("invalid comparison found: %s", comp)
       }
     
-//line parser.go:245
+//line parser.go:244
 		}
 	}
 
@@ -261,18 +260,18 @@ _again:
 			__acts++
 			switch _programs_actions[__acts-1] {
 			case 0:
-//line parser.go.rl:25
+//line parser.go.rl:24
  mark = p 
 			case 1:
-//line parser.go.rl:28
+//line parser.go.rl:27
 
       instructions = append(instructions, currentInstruction)
       currentInstruction = Instruction{}
     
 			case 4:
-//line parser.go.rl:35
+//line parser.go.rl:34
  currentInstruction.ComparisonValue, _ = strconv.Atoi(data[mark:p]) 
-//line parser.go:276
+//line parser.go:275
 			}
 		}
 	}
@@ -280,7 +279,7 @@ _again:
 	_out: {}
 	}
 
-//line parser.go.rl:86
+//line parser.go.rl:85
 
 
   if eof != p {
