@@ -8,6 +8,7 @@ The source tree already contains my inputs. To run day 1, for instance, follow t
 
 ```shell
 $ cd 01
+$ go get ./...
 $ go test ./...
 $ cat input | go run $(ls -1 *.go | grep -v _test.go)
 ```
