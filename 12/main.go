@@ -25,9 +25,7 @@ func main() {
 	}
 
 	seen := 1 // The program talks to itself so we initialize at 1
-	graph.BFS(g, 0, func(v, w int, c int64) {
-		seen++
-	})
+	graph.BFS(g, 0, func(v, w int, c int64) { seen++ })
 
 	groups := graph.StrongComponents(g)
 
