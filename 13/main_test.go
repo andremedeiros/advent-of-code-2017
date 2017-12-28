@@ -12,10 +12,10 @@ const ranges = `0: 3
 6: 4`
 
 func TestParseDepths(t *testing.T) {
-	ranges, depths := ParseDepths(ranges)
+	layers, depths := ParseDepths(ranges)
 
-	if ranges != 7 {
-		t.Errorf("Expected 6 ranges, got %d\n", ranges)
+	if layers != 7 {
+		t.Errorf("Expected 7 layers, got %d\n", layers)
 	}
 
 	depthsMap := map[int]int{0: 3, 1: 2, 4: 4, 6: 4}
@@ -27,7 +27,7 @@ func TestParseDepths(t *testing.T) {
 
 func TestCalculateSeverity(t *testing.T) {
 	ranges, depths := ParseDepths(ranges)
-	severity := CalculateSeverity(ranges, depths)
+	severity := CalculateSeverity(ranges, 0, depths)
 
 	if severity != 24 {
 		t.Errorf("Expected severity to be 24, got %d\n", severity)
@@ -53,5 +53,14 @@ func TestScannerPosition(t *testing.T) {
 				t.Errorf("Expected position to be %d, got %d\n", test.expected, got)
 			}
 		})
+	}
+}
+
+func TestMinDelay(t *testing.T) {
+	layers, depths := ParseDepths(ranges)
+	minDelay := MinDelay(layers, depths)
+
+	if minDelay != 10 {
+		t.Errorf("Expected delay to be 10, got %d\n", minDelay)
 	}
 }

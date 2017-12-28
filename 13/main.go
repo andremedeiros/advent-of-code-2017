@@ -15,7 +15,8 @@ func main() {
 	input := strings.TrimSpace(string(raw))
 
 	layers, depths := ParseDepths(input)
-	fmt.Println("Severity:", CalculateSeverity(layers, depths))
+	fmt.Println("Severity:", CalculateSeverity(layers, 0, depths))
+	fmt.Println("Min delay:", MinDelay(layers, depths))
 }
 
 // ParseDepths returns depths for the layers that hve them and how many layers there are
@@ -41,9 +42,9 @@ func ParseDepths(input string) (int, map[int]int) {
 }
 
 // CalculateSeverity calculates the severity of a trip
-func CalculateSeverity(layers int, depths map[int]int) int {
+func CalculateSeverity(layers, wait int, depths map[int]int) int {
 	severity := 0
-	clock := 0
+	clock := wait
 
 	for i := 0; i < layers; i++ {
 		depth, ok := depths[i]
@@ -61,6 +62,16 @@ func CalculateSeverity(layers int, depths map[int]int) int {
 	}
 
 	return severity
+}
+
+// MinDelay calculates the minimum delay necessary to avoid detection
+func MinDelay(layers int, depths map[int]int) int {
+	for i := 0; ; i++ {
+		severity := CalculateSeverity(layers, i, depths)
+		if severity == 0 {
+			return i
+		}
+	}
 }
 
 func scannerPosition(depth, time int) int {
