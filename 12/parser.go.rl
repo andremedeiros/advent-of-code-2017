@@ -3,6 +3,8 @@ package main
 import (
   "errors"
   "strconv"
+
+	"github.com/yourbasic/graph"
 )
 
 %%{
@@ -10,28 +12,23 @@ import (
   write data;
 }%%
 
-// Parse parses a list of programs and returns the list of node hints
-func Parse(data string) ([]ProgramHint, error) {
-  hints := []ProgramHint{}
+// Parse parses a list of programs and returns a graph
+func Parse(data string) (*graph.Mutable, error) {
+  graph := graph.New(2000)
 
   cs, p, pe, eof := 0, 0, len(data), len(data)
   mark := 0
 
-  currentHint := ProgramHint{}
+  id := 0
 
   %%{
     action mark                        { mark = p }
     action debug                       { fmt.Println(data[mark:p]) }
 
-    action register_program_id       { currentHint.ID, _ = strconv.Atoi(data[mark:p]) }
+    action register_program_id       { id, _ = strconv.Atoi(data[mark:p]) }
     action register_child_program_id {
       child, _ := strconv.Atoi(data[mark:p])
-      currentHint.Children = append(currentHint.Children, child)
-    }
-
-    action new_entry {
-      hints = append(hints, currentHint)
-      currentHint = ProgramHint{}
+      graph.AddBoth(id, child)
     }
 
     program_id = ( digit )+ >mark;
@@ -40,7 +37,7 @@ func Parse(data string) ([]ProgramHint, error) {
       program_id %register_program_id ' <-> '
       ( program_id %register_child_program_id ', ' )*
       program_id %register_child_program_id
-    ) %new_entry;
+    );
 
     main := ( entry '\n' )* entry;
 
@@ -49,9 +46,9 @@ func Parse(data string) ([]ProgramHint, error) {
   }%%
 
   if eof != p {
-    return []ProgramHint{}, errors.New("parse error")
+    return nil, errors.New("parse error")
   }
 
-  return hints, nil
+  return graph, nil
 }
 

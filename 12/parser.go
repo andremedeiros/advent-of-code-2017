@@ -5,13 +5,14 @@ package main
 import (
   "errors"
   "strconv"
+
+	"github.com/yourbasic/graph"
 )
 
 
-//line parser.go:12
+//line parser.go:14
 var _programs_actions []byte = []byte{
-	0, 1, 0, 1, 1, 1, 2, 2, 2, 
-	3, 
+	0, 1, 0, 1, 1, 1, 2, 
 }
 
 var _programs_key_offsets []byte = []byte{
@@ -47,13 +48,13 @@ var _programs_trans_targs []byte = []byte{
 
 var _programs_trans_actions []byte = []byte{
 	1, 0, 3, 0, 0, 0, 0, 0, 
-	0, 0, 0, 0, 0, 1, 0, 7, 
+	0, 0, 0, 0, 0, 1, 0, 5, 
 	5, 0, 0, 
 }
 
 var _programs_eof_actions []byte = []byte{
 	0, 0, 0, 0, 0, 0, 0, 0, 
-	7, 
+	5, 
 }
 
 const programs_start int = 1
@@ -63,25 +64,25 @@ const programs_error int = 0
 const programs_en_main int = 1
 
 
-//line parser.go.rl:11
+//line parser.go.rl:13
 
 
-// Parse parses a list of programs and returns the list of node hints
-func Parse(data string) ([]ProgramHint, error) {
-  hints := []ProgramHint{}
+// Parse parses a list of programs and returns a graph
+func Parse(data string) (*graph.Mutable, error) {
+  graph := graph.New(2000)
 
   cs, p, pe, eof := 0, 0, len(data), len(data)
   mark := 0
 
-  currentHint := ProgramHint{}
+  id := 0
 
   
-//line parser.go:80
+//line parser.go:81
 	{
 	cs = programs_start
 	}
 
-//line parser.go:85
+//line parser.go:86
 	{
 	var _klen int
 	var _trans int
@@ -160,24 +161,18 @@ _match:
 		_acts++
 		switch _programs_actions[_acts-1] {
 		case 0:
-//line parser.go.rl:23
+//line parser.go.rl:25
  mark = p 
 		case 1:
-//line parser.go.rl:26
- currentHint.ID, _ = strconv.Atoi(data[mark:p]) 
+//line parser.go.rl:28
+ id, _ = strconv.Atoi(data[mark:p]) 
 		case 2:
-//line parser.go.rl:27
+//line parser.go.rl:29
 
       child, _ := strconv.Atoi(data[mark:p])
-      currentHint.Children = append(currentHint.Children, child)
+      graph.AddBoth(id, child)
     
-		case 3:
-//line parser.go.rl:32
-
-      hints = append(hints, currentHint)
-      currentHint = ProgramHint{}
-    
-//line parser.go:181
+//line parser.go:176
 		}
 	}
 
@@ -197,18 +192,12 @@ _again:
 			__acts++
 			switch _programs_actions[__acts-1] {
 			case 2:
-//line parser.go.rl:27
+//line parser.go.rl:29
 
       child, _ := strconv.Atoi(data[mark:p])
-      currentHint.Children = append(currentHint.Children, child)
+      graph.AddBoth(id, child)
     
-			case 3:
-//line parser.go.rl:32
-
-      hints = append(hints, currentHint)
-      currentHint = ProgramHint{}
-    
-//line parser.go:212
+//line parser.go:201
 			}
 		}
 	}
@@ -216,13 +205,13 @@ _again:
 	_out: {}
 	}
 
-//line parser.go.rl:49
+//line parser.go.rl:46
 
 
   if eof != p {
-    return []ProgramHint{}, errors.New("parse error")
+    return nil, errors.New("parse error")
   }
 
-  return hints, nil
+  return graph, nil
 }
 

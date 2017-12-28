@@ -3,6 +3,8 @@ package main
 import (
   "errors"
   "strconv"
+
+  "github.com/yourbasic/graph"
 )
 
 %%{
@@ -11,12 +13,11 @@ import (
 }%%
 
 // Parse parses a list of programs and returns the list of node hints
-func Parse(data string) ([]NodeHint, error) {
-  hints := []NodeHint{}
-
+func Parse(data string) (graph.Graph, error) {
   cs, p, pe, eof := 0, 0, len(data), len(data)
   mark := 0
 
+  graph := graph.New(len(hints))
   currentHint := NodeHint{}
 
   %%{
@@ -47,6 +48,9 @@ func Parse(data string) ([]NodeHint, error) {
   if eof != p {
     return []NodeHint{}, errors.New("parse error")
   }
+
+
+
 
   return hints, nil
 }
