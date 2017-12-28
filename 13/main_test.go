@@ -18,11 +18,7 @@ func TestParseDepths(t *testing.T) {
 		t.Errorf("Expected 6 ranges, got %d\n", ranges)
 	}
 
-	depthsMap := map[int]int{}
-	depthsMap[0] = 3
-	depthsMap[1] = 2
-	depthsMap[4] = 4
-	depthsMap[6] = 4
+	depthsMap := map[int]int{0: 3, 1: 2, 4: 4, 6: 4}
 
 	if !reflect.DeepEqual(depthsMap, depths) {
 		t.Errorf("Expected depths to be %+v, got %+v\n", depthsMap, depths)
