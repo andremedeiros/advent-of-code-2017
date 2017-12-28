@@ -15,8 +15,14 @@ func main() {
 	input := strings.TrimSpace(string(raw))
 
 	layers, depths := ParseDepths(input)
-	fmt.Println("Severity:", CalculateSeverity(layers, 0, depths))
+	fmt.Println("Severity:", CalculateSeverity(layers, depths, CalculateSeverityOptions{}))
 	fmt.Println("Min delay:", MinDelay(layers, depths))
+}
+
+// CalculateSeverityOptions passes options to the CalculateSeverity method
+type CalculateSeverityOptions struct {
+	BailWhenCaught bool
+	Delay          int
 }
 
 // ParseDepths returns depths for the layers that hve them and how many layers there are
@@ -42,9 +48,9 @@ func ParseDepths(input string) (int, map[int]int) {
 }
 
 // CalculateSeverity calculates the severity of a trip
-func CalculateSeverity(layers, wait int, depths map[int]int) int {
+func CalculateSeverity(layers int, depths map[int]int, options CalculateSeverityOptions) int {
 	severity := 0
-	clock := wait
+	clock := options.Delay
 
 	for i := 0; i < layers; i++ {
 		depth, ok := depths[i]
@@ -55,6 +61,9 @@ func CalculateSeverity(layers, wait int, depths map[int]int) int {
 
 			if pos == 1 {
 				severity += (i * depth)
+				if options.BailWhenCaught {
+					return severity
+				}
 			}
 		}
 
@@ -66,8 +75,8 @@ func CalculateSeverity(layers, wait int, depths map[int]int) int {
 
 // MinDelay calculates the minimum delay necessary to avoid detection
 func MinDelay(layers int, depths map[int]int) int {
-	for i := 0; ; i++ {
-		severity := CalculateSeverity(layers, i, depths)
+	for i := 1; ; i++ {
+		severity := CalculateSeverity(layers, depths, CalculateSeverityOptions{BailWhenCaught: true, Delay: i})
 		if severity == 0 {
 			return i
 		}

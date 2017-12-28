@@ -27,7 +27,7 @@ func TestParseDepths(t *testing.T) {
 
 func TestCalculateSeverity(t *testing.T) {
 	ranges, depths := ParseDepths(ranges)
-	severity := CalculateSeverity(ranges, 0, depths)
+	severity := CalculateSeverity(ranges, depths, CalculateSeverityOptions{})
 
 	if severity != 24 {
 		t.Errorf("Expected severity to be 24, got %d\n", severity)
