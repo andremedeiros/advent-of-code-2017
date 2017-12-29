@@ -58,6 +58,7 @@ func TestScannerPosition(t *testing.T) {
 
 func TestMinDelay(t *testing.T) {
 	layers, depths := ParseDepths(ranges)
+	drawScannerMovements(depths, 20)
 	minDelay := MinDelay(layers, depths)
 
 	if minDelay != 10 {

@@ -98,3 +98,49 @@ func scannerPosition(depth, time int) int {
 
 	return pos
 }
+
+func drawScannerMovements(depths map[int]int, seconds int) {
+	maxDepth := 0
+	maxLayer := 0
+
+	for layer, depth := range depths {
+		if maxDepth < depth {
+			maxDepth = depth
+		}
+
+		if maxLayer < layer {
+			maxLayer = layer
+		}
+	}
+
+	for clock := 0; clock < seconds; clock++ {
+		// Header
+		fmt.Printf("Picosecond %d\n", clock)
+
+		for i := 0; i <= maxLayer; i++ {
+			fmt.Printf(" %d  ", i)
+		}
+		fmt.Printf("\n")
+
+		// Scanner lines
+		for i := 0; i < maxDepth; i++ {
+			for j := 0; j <= maxLayer; j++ {
+				if depth, ok := depths[j]; ok && depth > i {
+					pos := scannerPosition(depth, clock)
+					if pos == i+1 {
+						fmt.Printf("{S] ")
+					} else {
+						fmt.Printf("{ ] ")
+					}
+				} else if i == 0 {
+					fmt.Printf("... ")
+				} else {
+					fmt.Printf("    ")
+				}
+			}
+
+			fmt.Printf("\n")
+		}
+		fmt.Printf("\n\n")
+	}
+}
