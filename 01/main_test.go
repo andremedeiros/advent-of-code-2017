@@ -1,13 +1,14 @@
 package main
 
 import (
+	"bytes"
 	"testing"
 )
 
 func TestFirstCaptcha(t *testing.T) {
 	tests := []struct {
 		name, puzzle string
-		expected     int
+		expected     rune
 	}{
 		{"simple match", "1122", 3},
 		{"multiple matches", "1111", 4},
@@ -17,8 +18,8 @@ func TestFirstCaptcha(t *testing.T) {
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			digits := getIntSlice(test.puzzle)
-			got := solveFirstCaptcha(digits)
+			// digits := getIntSlice(test.puzzle)
+			got := solveFirstCaptcha(bytes.Runes([]byte(test.puzzle)))
 			if got != test.expected {
 				t.Errorf("Expected: %d, got: %d\n", test.expected, got)
 			}
@@ -29,7 +30,7 @@ func TestFirstCaptcha(t *testing.T) {
 func TestSecondCaptcha(t *testing.T) {
 	tests := []struct {
 		name, puzzle string
-		expected     int
+		expected     rune
 	}{
 		{"all matches", "1212", 6},
 		{"no matches", "1221", 0},
@@ -40,8 +41,7 @@ func TestSecondCaptcha(t *testing.T) {
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			digits := getIntSlice(test.puzzle)
-			got := solveSecondCaptcha(digits)
+			got := solveSecondCaptcha(bytes.Runes([]byte(test.puzzle)))
 			if got != test.expected {
 				t.Errorf("Expected: %d, got: %d\n", test.expected, got)
 			}

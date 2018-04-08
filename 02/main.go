@@ -34,78 +34,65 @@ func NewSpreadsheet(contents string) Spreadsheet {
 	reader.Comma = '\t'
 
 	for {
-		if record, err := reader.Read(); err == io.EOF {
+		record, err := reader.Read()
+		if err == io.EOF {
 			break
-		} else {
-			row := make([]int, len(record))
-
-			for i := 0; i < len(record); i++ {
-				row[i], _ = strconv.Atoi(record[i])
-			}
-
-			spreadsheet = append(spreadsheet, row)
 		}
+
+		row := make([]int, 0, len(record))
+		for _, r := range record {
+			i, _ := strconv.Atoi(r)
+			row = append(row, i)
+		}
+
+		spreadsheet = append(spreadsheet, row)
 	}
 
 	return spreadsheet
 }
 
 // Checksum1 calculates the first checksum
-func (s Spreadsheet) Checksum1() int {
-	checksum := 0
-
-	for i := 0; i < len(s); i++ {
-		row := s[i]
-
+func (s Spreadsheet) Checksum1() (checksum int) {
+	for _, row := range s {
 		min, max := row.MinMax()
 		checksum += max - min
 	}
-
-	return checksum
+	return
 }
 
 // Checksum2 calculates the second checksum
-func (s Spreadsheet) Checksum2() int {
-	checksum := 0
-
-	for i := 0; i < len(s); i++ {
-		row := s[i]
-
-		for j := 0; j < len(row)-1; j++ {
-			for k := j + 1; k < len(row); k++ {
-				a := row[j]
-				b := row[k]
-
-				if a > b && a%b == 0 {
+func (s Spreadsheet) Checksum2() (checksum int) {
+	for _, row := range s {
+		for j, a := range row[:len(row)-1] {
+			for _, b := range row[j+1:] {
+				switch {
+				case a > b && a%b == 0:
 					checksum += a / b
-				} else if b > a && b%a == 0 {
+				case b > a && b%a == 0:
 					checksum += b / a
 				}
 			}
 		}
 	}
-
-	return checksum
+	return
 }
 
 // MinMax returns the minimum and maximum values of a row
-func (r Row) MinMax() (int, int) {
+func (r Row) MinMax() (min, max int) {
 	if len(r) == 0 {
-		return 0, 0
-	} else if len(r) == 1 {
-		return r[0], r[0]
-	} else {
-		min := r[0]
-		max := r[0]
-
-		for i := 1; i < len(r); i++ {
-			if r[i] > max {
-				max = r[i]
-			} else if r[i] < min {
-				min = r[i]
-			}
-		}
-
-		return min, max
+		return
 	}
+
+	min, max = r[0], r[0]
+
+	for _, x := range r[1:] {
+		switch {
+		case x > max:
+			max = x
+		case x < min:
+			min = x
+		}
+	}
+
+	return
 }
